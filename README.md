@@ -90,3 +90,14 @@ Du hast zwei einfache Möglichkeiten, das Spiel zu starten:
 | **Rechte Maustaste / Umschalt** | Kamera verschieben (Pan) |
 | **Mausrad** | Hinein- / Herauszoomen |
 
+---
+
+## 🔒 Lizenz / License (All Rights Reserved)
+
+**Proprietäre Lizenz – Alle Rechte vorbehalten (Copyright © 2026 TheBrina91).**
+
+- **Exklusive Berechtigung:** Ausschließlich der GitHub-Nutzer **[dvrkstvr](https://github.com/dvrkstvr)** (sowie der Eigentümer **[TheBrina91](https://github.com/TheBrina91)**) ist berechtigt, dieses Projekt herunterzuladen, zu klonen, zu bearbeiten oder weiterzuentwickeln.
+- **Verbot für Dritte:** Allen anderen Personen ist das Herunterladen, Klonen, Forken, Kopieren, Bearbeiten oder Weiterverbreiten des Quellcodes und der Inhalte ausdrücklich untersagt.
+- Siehe [LICENSE](file:///c:/Users/sabri/Test%20Projekte/Achterbahn/LICENSE) für die vollständigen Lizenzbestimmungen.
+
+

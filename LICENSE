@@ -1,0 +1,65 @@
+PROPRIETARY & RESTRICTED SOFTWARE LICENSE
+Copyright (c) 2026 TheBrina91. Alle Rechte vorbehalten / All Rights Reserved.
+
+================================================================================
+DEUTSCH (Verbindliche Lizenzbestimmungen)
+================================================================================
+
+1. URHEBERRECHT & EIGENTUM
+Diese Software ("CoasterCraft 2D") einschließlich sämtlicher Quellcodes, Skripte,
+Grafiken, Audiosynthese-Routinen, Dokumentationen und zugehöriger Dateien ist
+urheberrechtlich geschützt. Alle Rechte verbleiben beim Urheber (TheBrina91).
+
+2. EXKLUSIVE NUTZUNGS- UND BEARBEITUNGSERLAUBNIS
+Ausgenommen vom allgemeinen Verbot ist ausschließlich der folgende GitHub-Account:
+  - GitHub-Nutzer: dvrkstvr (https://github.com/dvrkstvr)
+  - sowie der Repository-Eigentümer: TheBrina91 (https://github.com/TheBrina91)
+
+Nur `dvrkstvr` (und `TheBrina91`) ist es gestattet, diese Software und ihren
+Quellcode herunterzuladen, zu klonen, zu speichern, zu verändern, zu bearbeiten,
+weiterzuentwickeln oder für eigene Zwecke zu nutzen.
+
+3. STRIKTES VERBOT FÜR ALLE ANDEREN PERSONEN / DRITTE
+Jeder anderen natürlichen oder juristischen Person (außer `dvrkstvr` und `TheBrina91`)
+ist es ohne vorherige ausdrückliche schriftliche Genehmigung STRIKT UNTERSAGT:
+  a) das Repository oder Teile davon herunterzuladen (Download, Clone, Fork),
+  b) den Quellcode oder Assets zu kopieren, zu vervielfältigen oder lokal zu speichern,
+  c) den Quellcode zu bearbeiten, zu modifizieren, zu dekompilieren oder abgeleitete
+     Werke (Derivative Works) daraus zu erstellen,
+  d) die Software oder Teile davon kommerziell oder nicht-kommerziell weiterzuverbreiten
+     oder erneut zu veröffentlichen.
+
+Die öffentliche Bereitstellung des Repositories dient ausschließlich dem technischen
+Hosting über GitHub Pages (Ansicht im Webbrowser) sowie dem autorisierten Zugriff
+durch `github.com/dvrkstvr`.
+
+================================================================================
+ENGLISH (Binding License Terms)
+================================================================================
+
+1. COPYRIGHT & OWNERSHIP
+This software ("CoasterCraft 2D"), including all source code, scripts, styles,
+assets, documentation, and related files, is proprietary and protected by copyright
+law. All rights are reserved by the author (TheBrina91).
+
+2. EXCLUSIVE GRANT OF PERMISSION
+Permission to download, clone, copy, modify, edit, adapt, or otherwise use this
+software and its source code is granted EXCLUSIVELY to:
+  - GitHub User: dvrkstvr (https://github.com/dvrkstvr)
+  - Repository Owner: TheBrina91 (https://github.com/TheBrina91)
+
+3. STRICT PROHIBITION FOR ALL OTHER PARTIES
+Except for `dvrkstvr` and `TheBrina91`, NO person, organization, or entity is
+permitted to:
+  a) download, clone, fork, or archive this repository or any part of its source code,
+  b) modify, edit, adapt, translate, reverse-engineer, or create derivative works
+     based on this software,
+  c) redistribute, sublicense, host, or republish this software or any portion of it
+     in any form, whether commercial or non-commercial.
+
+Public visibility of this repository exists solely for GitHub Pages web hosting and
+for authorized access by `github.com/dvrkstvr`. Any unauthorized downloading, copying,
+or modification constitutes a violation of copyright law.
+
+4. DISCLAIMER
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
