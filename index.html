@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CoasterCraft 2D - Achterbahn Konstrukteur & Simulator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Canvas Viewport -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Top App Header -->
+  <header class="top-nav">
+    <div class="brand">
+      <span class="brand-icon">🎢</span>
+      <div class="brand-text">
+        <h1 class="brand-title">CoasterCraft 2D</h1>
+        <span class="brand-subtitle">Achterbahn-Konstrukteur</span>
+      </div>
+    </div>
+
+    <!-- Mode Selector -->
+    <div class="nav-group mode-toggle">
+      <button id="btnModeBuild" class="btn btn-tab active">🛠️ Bauen</button>
+      <button id="btnModeTest" class="btn btn-tab">🎢 Testfahrt</button>
+    </div>
+
+    <!-- Quick Play Controls -->
+    <div class="nav-group sim-controls">
+      <button id="btnPlayPause" class="btn btn-success">▶ Starten</button>
+      <button id="btnReset" class="btn btn-secondary" title="Zug an den Start zurücksetzen (R)">🔁 Reset</button>
+    </div>
+
+    <!-- Coaster Selection & Presets -->
+    <div class="nav-group">
+      <button id="btnOpenCoasterBrowser" class="btn btn-primary" title="Achterbahn wählen, speichern oder auf der Karte platzieren">🎢 Achterbahn wählen</button>
+      <button id="btnFocusEntrance" class="btn btn-secondary" title="Kamera zum Park-Eingang rechts bewegen">🚶 <span id="hudVisitorCount">0</span> Besucher | 🚪 Eingang</button>
+      <select id="presetSelect" class="select-styled" title="Schnell-Vorlagen laden">
+        <option value="" disabled selected>📂 Vorlagen...</option>
+        <option value="alpenblitz">Alpen-Blitz (Hyper-Coaster)</option>
+        <option value="wildwasser">💦 Wildwasser-Klamm (Wasserbahn)</option>
+        <option value="loopingmonster">Looping-Monster (Extrem)</option>
+        <option value="hypersonic">Hypersonic (Maglev-Katapult)</option>
+        <option value="stuntjump">Maglev Stunt-Jumper (Schanze)</option>
+        <option value="kinderbahn">Familien-Raupe (Sanft)</option>
+      </select>
+    </div>
+
+    <!-- Camera & Theme Controls -->
+    <div class="nav-group header-settings">
+      <select id="camModeSelect" class="select-styled" title="Kameramodus ändern (C)">
+        <option value="follow">🎥 Zug verfolgen</option>
+        <option value="ride">🚴 Mitfahren (POV)</option>
+        <option value="free">🌐 Freie Kamera</option>
+      </select>
+
+      <select id="themeSelect" class="select-styled" title="Tageszeit ändern">
+        <option value="day">☀️ Tag</option>
+        <option value="sunset">🌅 Sonnenuntergang</option>
+        <option value="night">🌙 Nacht</option>
+      </select>
+
+      <button id="btnMute" class="btn btn-secondary icon-btn" title="Ton ein/ausschalten (M)">🔊 Ton</button>
+      <button id="btnOpenSettings" class="btn btn-secondary icon-btn" title="Physik & Einstellungen">⚙️</button>
+      <button id="btnOpenHelp" class="btn btn-secondary icon-btn" title="Anleitung & Steuerung">❓</button>
+    </div>
+  </header>
+
+  <!-- Left Builder Toolbar (Only shown in Build Mode) -->
+  <div id="buildToolbar" class="toolbar-overlay">
+    <div class="tool-section">
+      <div class="section-title">WERKZEUGE</div>
+      <div class="tool-grid">
+        <button class="btn btn-tool active" data-tool="select" title="Punkte auswählen & frei verschieben">
+          <span class="tool-icon">✋</span>
+          <span class="tool-label">Bewegen</span>
+        </button>
+        <button class="btn btn-tool" data-tool="add" title="Klicke auf die Karte oder eine Schiene um Punkte hinzuzufügen">
+          <span class="tool-icon">➕</span>
+          <span class="tool-label">Punkt +</span>
+        </button>
+        <button class="btn btn-tool" data-tool="delete" title="Klicke auf einen Punkt um ihn zu löschen">
+          <span class="tool-icon">🗑️</span>
+          <span class="tool-label">Löschen</span>
+        </button>
+        <button class="btn btn-tool" data-tool="freehand" title="Zeichne frei mit der Maus eine Linie und konvertiere sie zur Achterbahn!">
+          <span class="tool-icon">✏️</span>
+          <span class="tool-label">Freihand</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">SCHIENEN-TYP</div>
+      <div class="tool-grid">
+        <button class="btn btn-tool type-normal" data-tool="normal" title="Normale Stahlschiene (Freie Fahrt)">
+          <span class="tool-icon">🎢</span>
+          <span class="tool-label">Normal</span>
+        </button>
+        <button class="btn btn-tool type-lift" data-tool="lift" title="Kettenlift: Zieht den Zug mechanisch den Berg hinauf">
+          <span class="tool-icon">⛓️</span>
+          <span class="tool-label">Kettenlift</span>
+        </button>
+        <button class="btn btn-tool type-boost" data-tool="boost" title="LSM Booster: Beschleunigt während der Fahrt">
+          <span class="tool-icon">⚡</span>
+          <span class="tool-label">Booster</span>
+        </button>
+        <button class="btn btn-tool type-maglev" data-tool="maglev" title="Maglev-Schiene: Pausiert kurz zum Aufladen und feuert dann mit Vollgas los!">
+          <span class="tool-icon">🧲</span>
+          <span class="tool-label">Maglev</span>
+        </button>
+        <button class="btn btn-tool type-brake" data-tool="brake" title="Bremsen: Bremst den Zug sanft ab">
+          <span class="tool-icon">🛑</span>
+          <span class="tool-label">Bremsen</span>
+        </button>
+        <button class="btn btn-tool type-gap" data-tool="gap" title="Sprung-Schanze (Schienen-Lücke): Der Zug hebt ab und gleist auf der nächsten Schiene wieder ein!">
+          <span class="tool-icon">🚀</span>
+          <span class="tool-label">Schanze</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">ELEMENTE EINFÜGEN</div>
+      <div class="action-list">
+        <button id="btnInsertLoop" class="btn btn-compact" title="Vertikalen Looping am Ende einfügen">➰ Looping</button>
+        <button id="btnInsertHill" class="btn btn-compact" title="Airtime-Hügel (Camelback) einfügen">🐪 Camelback</button>
+        <button id="btnInsertDrop" class="btn btn-compact" title="Hohen Steilabsturz einfügen">📉 Mega-Drop</button>
+        <button id="btnInsertJump" class="btn btn-compact" title="Maglev-Anlauf mit Sprung-Schanze und Landebahn einfügen">🚀 Sprung-Schanze</button>
+      </div>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">BAHN GLÄTTEN (SMOOTH)</div>
+      <div class="smooth-slider-row">
+        <span class="smooth-label">Smooth-Stärke</span>
+        <span id="valSmoothStrength" class="smooth-val">45%</span>
+      </div>
+      <input type="range" id="sliderSmoothStrength" class="slider-full" min="5" max="100" step="5" value="45" title="Stärke der Punkt-zu-Punkt Glättung einstellen">
+      <div class="history-controls">
+        <button id="btnSmoothBackward" class="btn btn-secondary flex-1" title="Von Punkt zu Punkt rückwärts glätten (Klicken oder gedrückt halten)">◀ Smooth</button>
+        <button id="btnSmoothForward" class="btn btn-secondary flex-1" title="Von Punkt zu Punkt vorwärts glätten (Klicken oder gedrückt halten)">Smooth ▶</button>
+      </div>
+      <button id="btnSmoothAll" class="btn btn-secondary btn-block btn-compact" title="Alle Punkte der Achterbahn vorwärts & rückwärts glätten">🌊 Ganze Bahn glätten</button>
+    </div>
+
+    <div class="tool-section">
+      <div class="section-title">PARK & STRECKE</div>
+      <select id="activeCoasterSelect" class="select-styled select-full" title="Aktive Achterbahn im Park auswählen"></select>
+      <select id="rideTypeSelect" class="select-styled select-full" title="Bahntyp wählen: Stahl-Achterbahn oder Wasserbahn (nur Kettenlift & spritzende Wasserbremse)">
+        <option value="steel">🎢 Typ: Stahl-Achterbahn</option>
+        <option value="water">💦 Typ: Wasserbahn</option>
+      </select>
+      <button id="btnToggleCircuit" class="btn btn-primary btn-block">🔄 Rundkurs: An</button>
+      <div class="history-controls">
+        <button id="btnUndo" class="btn btn-secondary flex-1" title="Rückgängig (Strg+Z)">↩ Zurück</button>
+        <button id="btnRedo" class="btn btn-secondary flex-1" title="Wiederholen (Strg+Y)">↪ Vor</button>
+      </div>
+      <button id="btnConvertFreehand" class="btn btn-success btn-block btn-compact" style="display: none;" title="Gezeichnete Freihand-Linie in eine fahrbare Achterbahn umwandeln (Enter)">✨ Zur Bahn konvertieren</button>
+      <button id="btnClearTrack" class="btn btn-primary btn-block btn-compact" title="Eine neue Achterbahn per Freihand-Zeichnung in den Park bauen">🆕 Neue Bahn (Freihand)</button>
+      <button id="btnDeleteCoaster" class="btn btn-outline-danger btn-block btn-compact" title="Aktuell ausgewählte Achterbahn löschen">🗑️ Aktuelle Bahn löschen</button>
+    </div>
+
+    <!-- Selected Node Inspector Box -->
+    <div id="nodeInspector" class="inspector-box" style="display: none;">
+      <div class="inspector-header">
+        <span id="nodeIndexBadge" class="badge">Punkt #1</span>
+        <button id="btnDeleteSelectedNode" class="btn-icon-danger" title="Diesen Punkt entfernen">✕</button>
+      </div>
+      <label class="inspector-label">Abschnitt-Typ:</label>
+      <select id="nodeTypeSelect" class="select-styled select-full">
+        <option value="normal">🎢 Normale Schiene</option>
+        <option value="lift">⛓️ Kettenlift (Bergauf)</option>
+        <option value="boost">⚡ Booster-Antrieb</option>
+        <option value="maglev">🧲 Maglev-Katapult</option>
+        <option value="brake">🛑 Bremsabschnitt</option>
+        <option value="gap">🚀 Sprung-Schanze (Lücke)</option>
+      </select>
+      <button id="btnResetHandles" class="btn btn-secondary btn-compact btn-block" title="Bézier-Griffe dieses Punkts automatisch glätten">↺ Griffe glätten</button>
+    </div>
+  </div>
+
+  <!-- Telemetry HUD & Coaster Rating -->
+  <div class="telemetry-panel">
+    <div class="telemetry-main">
+      <div class="speedometer">
+        <div class="speed-number" id="hudSpeed">0</div>
+        <div class="speed-unit">km/h</div>
+      </div>
+      <div class="gforce-box">
+        <div class="gforce-label">G-KRAFT</div>
+        <div class="telemetry-value" id="hudGForce">1.0 G</div>
+      </div>
+    </div>
+
+    <div class="telemetry-details">
+      <div class="detail-item">
+        <span class="detail-label">Ø / Max Geschw.:</span>
+        <span class="detail-val" id="hudMaxSpeed">0 / 0 km/h</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Länge:</span>
+        <span class="detail-val" id="hudTrackLength">0 m</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Ø G / Airtime:</span>
+        <span class="detail-val" id="hudAirtime">1.0 G (0%)</span>
+      </div>
+    </div>
+
+    <!-- Theme Park Rating (RollerCoaster Tycoon style) -->
+    <div class="rating-strip">
+      <div class="rating-badge rating-fun" title="Spaßfaktor: Erhöht sich durch Drops, Airtime und hohe Geschwindigkeiten">
+        <span class="rating-icon">🤩</span>
+        <div class="rating-col">
+          <span class="rating-name">SPASS</span>
+          <span class="rating-score" id="hudExcitement">7.5</span>
+        </div>
+      </div>
+      <div class="rating-badge rating-intensity" title="Intensität: Maß für G-Kräfte und Drops">
+        <span class="rating-icon">⚡</span>
+        <div class="rating-col">
+          <span class="rating-name">INTENSITÄT</span>
+          <span class="rating-score" id="hudIntensity">6.2</span>
+        </div>
+      </div>
+      <div class="rating-badge rating-nausea" title="Übelkeit: Steigt bei extremen G-Kräften und harten Richtungswechseln">
+        <span class="rating-icon">🤢</span>
+        <div class="rating-col">
+          <span class="rating-name">ÜBELKEIT</span>
+          <span class="rating-score" id="hudNausea">2.8</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Drawer / Modal -->
+  <div id="settingsDrawer" class="drawer-modal">
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <h3>⚙️ Einstellungen & Physik</h3>
+        <button id="btnCloseSettings" class="btn-close">✕</button>
+      </div>
+
+      <div class="setting-item">
+        <label>Zuglänge (Anzahl Wagen): <strong id="valCars">3</strong></label>
+        <input type="range" id="sliderCars" min="1" max="6" value="3" step="1">
+      </div>
+
+      <div class="setting-item">
+        <label>Schwerkraft: <strong id="valGravity">9.8 m/s²</strong></label>
+        <input type="range" id="sliderGravity" min="1.6" max="25" value="9.8" step="0.2">
+      </div>
+
+      <div class="setting-item">
+        <label>Schienen-Reibung: <strong id="valFriction">0.7%</strong></label>
+        <input type="range" id="sliderFriction" min="0.001" max="0.03" value="0.007" step="0.001">
+      </div>
+
+      <div class="setting-item">
+        <label>Raster-Ausrichtung (Grid Snap):</label>
+        <select id="gridSnapSelect" class="select-styled select-full">
+          <option value="0">Freies Platzieren (Aus)</option>
+          <option value="15">Fein (15px)</option>
+          <option value="25" selected>Standard (25px)</option>
+          <option value="50">Grob (50px)</option>
+        </select>
+      </div>
+
+      <div class="setting-item checkbox-item">
+        <label class="toggle-switch">
+          <input type="checkbox" id="chkAllowDerail" checked>
+          <span class="slider"></span>
+        </label>
+        <span>Entgleisung bei offenen Strecken erlauben</span>
+      </div>
+
+      <hr class="drawer-divider">
+
+      <div class="setting-item">
+        <label>Strecke speichern & teilen:</label>
+        <div class="export-import-group">
+          <button id="btnExport" class="btn btn-secondary flex-1">💾 Exportieren (JSON)</button>
+          <button id="btnImport" class="btn btn-secondary flex-1">📂 Importieren</button>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Freehand & Placement Action Banners -->
+  <div id="freehandBanner" class="floating-banner" style="display: none;">
+    <span class="banner-text">✏️ <strong>Freihand-Zeichnen:</strong> Halte die linke Maustaste gedrückt, um deine Achterbahn zu skizzieren!</span>
+    <div class="banner-actions">
+      <button id="btnBannerConvertFreehand" class="btn btn-success btn-compact">✨ Zur Bahn konvertieren</button>
+      <button id="btnBannerClearFreehand" class="btn btn-secondary btn-compact">🗑️ Skizze löschen</button>
+    </div>
+  </div>
+
+  <div id="placementBanner" class="floating-banner placement-mode-banner" style="display: none;">
+    <span class="banner-text" id="placementBannerText">📍 <strong>Platzier-Modus:</strong> Klicke auf die Karte, um die Achterbahn hier zu platzieren!</span>
+    <div class="banner-actions">
+      <button id="btnCancelPlacement" class="btn btn-danger btn-compact">✕ Abbrechen (Esc)</button>
+    </div>
+  </div>
+
+  <!-- Coaster Browser / Selection & Save Modal -->
+  <div id="coasterBrowserModal" class="drawer-modal">
+    <div class="drawer-content coaster-browser-content">
+      <div class="drawer-header">
+        <h3>🎢 Achterbahn wählen, speichern & platzieren</h3>
+        <button id="btnCloseCoasterBrowser" class="btn-close">✕</button>
+      </div>
+
+      <div class="coaster-browser-toolbar">
+        <div class="save-coaster-box">
+          <input type="text" id="inputCoasterName" class="input-styled" placeholder="Name deiner aktuellen Achterbahn..." maxlength="40">
+          <button id="btnSaveCoaster" class="btn btn-success">💾 Aktuelle Bahn speichern</button>
+        </div>
+        <div class="new-coaster-actions">
+          <button id="btnModalNewFreehand" class="btn btn-primary">✏️ Neue Bahn (Freihand)</button>
+          <button id="btnModalNewWaterFreehand" class="btn btn-primary">💦 Neue Wasserbahn (Freihand)</button>
+          <button id="btnModalNewEmpty" class="btn btn-secondary">📄 Leere Strecke</button>
+        </div>
+      </div>
+
+      <div id="coasterBrowserGrid" class="coaster-cards-grid"></div>
+    </div>
+  </div>
+
+  <!-- Help & Tutorial Dialog -->
+  <div id="helpModal" class="drawer-modal">
+    <div class="drawer-content help-content">
+      <div class="drawer-header">
+        <h3>🎮 Anleitung: Achterbahn-Konstrukteur</h3>
+        <button id="btnCloseHelp" class="btn-close">✕</button>
+      </div>
+
+      <div class="help-body">
+        <h4>🛠️ So baust du deine Bahn:</h4>
+        <ul>
+          <li><strong>Punkte setzen:</strong> Wähle das <code>➕ Punkt +</code> Werkzeug und klicke auf die freie Fläche, um neue Streckenpunkte anzuhängen.</li>
+          <li><strong>Punkte in die Mitte einfügen:</strong> Klicke mit dem <code>➕</code> Werkzeug auf eine existierende Schiene, um sie aufzuteilen!</li>
+          <li><strong>Punkte verschieben:</strong> Wähle <code>✋ Bewegen</code> und ziehe Punkte mit der linken Maustaste.</li>
+          <li><strong>Kettenlift (Bergauf):</strong> Schienen können Züge nicht ohne Schwung bergauf befördern. Setze steile Abschnitte auf <code>⛓️ Kettenlift</code>, um den Zug hochzuziehen!</li>
+          <li><strong>Booster & Bremsen:</strong> Nutze <code>⚡ Booster</code> für Katapultstarts und <code>🛑 Bremsen</code> vor dem Bahnhof.</li>
+        </ul>
+
+        <h4>⌨️ Tastatur-Kürzel:</h4>
+        <div class="keybinds-table">
+          <div><kbd>Leertaste</kbd> <span>Testfahrt Start / Pause</span></div>
+          <div><kbd>R</kbd> <span>Zug zurück zum Start (Reset)</span></div>
+          <div><kbd>B</kbd> <span>Modus wechseln (Bauen / Fahren)</span></div>
+          <div><kbd>C</kbd> <span>Kamera umschalten (Verfolgen / Mitfahren / Frei)</span></div>
+          <div><kbd>Strg + Z</kbd> <span>Rückgängig (Undo)</span></div>
+          <div><kbd>Strg + Y</kbd> <span>Wiederholen (Redo)</span></div>
+          <div><kbd>Entf</kbd> <span>Ausgewählten Punkt löschen</span></div>
+          <div><kbd>M</kbd> <span>Ton stummschalten</span></div>
+          <div><kbd>Rechte Maustaste</kbd> <span>Kamera verschieben (Pan)</span></div>
+          <div><kbd>Mausrad</kbd> <span>Hinein- / Herauszoomen</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/spline.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/presets.js"></script>
+  <script src="js/game.js"></script>
+
+  <!-- Help & Settings modal toggle logic -->
+  <script>
+    const settingsDrawer = document.getElementById('settingsDrawer');
+    const helpModal = document.getElementById('helpModal');
+
+    document.getElementById('btnOpenSettings').addEventListener('click', () => {
+      settingsDrawer.classList.toggle('open');
+      helpModal.classList.remove('open');
+    });
+    document.getElementById('btnCloseSettings').addEventListener('click', () => {
+      settingsDrawer.classList.remove('open');
+    });
+
+    document.getElementById('btnOpenHelp').addEventListener('click', () => {
+      helpModal.classList.toggle('open');
+      settingsDrawer.classList.remove('open');
+    });
+    document.getElementById('btnCloseHelp').addEventListener('click', () => {
+      helpModal.classList.remove('open');
+    });
+  </script>
+</body>
+</html>
+

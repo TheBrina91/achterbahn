@@ -1,0 +1,13 @@
+{
+  "name": "coastercraft-2d",
+  "version": "1.0.0",
+  "description": "Ein 2D-Achterbahn-Bauspiel und Simulator im Browser",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["game", "rollercoaster", "physics", "simulation", "canvas"],
+  "author": "",
+  "license": "MIT"
+}
+
